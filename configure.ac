@@ -9,7 +9,7 @@ AC_LANG([C++])
 AC_CONFIG_SRCDIR([adept/adept.cpp])
 AC_CONFIG_HEADERS([config.h])
 
-AM_INIT_AUTOMAKE([-Wall -Werror])
+AM_INIT_AUTOMAKE([-Wall -Wno-error])
 
 # Checks for programs.
 AC_PROG_CXX

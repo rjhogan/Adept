@@ -757,7 +757,7 @@ namespace adept {
   void
   Stack::print_gaps(std::ostream& os) const
   {
-    for (std::list<Gap>::const_iterator it = gap_list_.begin();
+    for (GapList::const_iterator it = gap_list_.begin();
 	 it != gap_list_.end(); it++) {
       os << it->start << "-" << it->end << " ";
     }

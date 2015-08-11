@@ -19,4 +19,5 @@ Makefile.in
 *~
 Makefile
 !test/Makefile
+!doc/Makefile
 include/adept_source.h

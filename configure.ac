@@ -54,7 +54,7 @@ AC_TYPE_SIZE_T
 # Checks for library functions.
 AC_CHECK_FUNCS([gettimeofday pow sqrt])
 
-AC_CONFIG_FILES([Makefile makefile_include adept/Makefile include/Makefile doc/Makefile benchmark/Makefile])
+AC_CONFIG_FILES([Makefile makefile_include adept/Makefile include/Makefile benchmark/Makefile])
 
 AC_MSG_NOTICE([********************* Summary **************************************])
 AC_MSG_NOTICE([Compiling with: $CXX $CPPFLAGS $CXXFLAGS $OPENMP_CXXFLAGS])

@@ -2,8 +2,7 @@ This directory contains the Adept User Guide, both the PDF and the
 LaTeX source file.
 
 Type "pdflatex adept_documentation.tex" three times to recreate the
-PDF file (or type "make documentation" in this directory after running
-the configure script one directory above).
+PDF file (or type "make documentation" in this directory).
 
 Permission is granted to copy, distribute and/or modify the Adept User
 Guide under the terms of the GNU Free Documentation License, Version

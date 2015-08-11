@@ -13,14 +13,14 @@ For further information see:
 
 To build Adept from a GitHub snapshot, do the following:
 
-   `libtoolize`
-   `aclocal`
-   `autoheader`
-   `automake --add-missing`
-   `autoconf`
+    libtoolize
+    aclocal
+    autoheader
+    automake --add-missing
+    autoconf
 
 Then the normal make sequence:
 
-   `./configure`
-   `make`
-   `make install`
+    ./configure
+    make
+    make install

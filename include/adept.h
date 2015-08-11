@@ -1459,7 +1459,9 @@ ADEPT_DEFINE_UNARY_FUNCTION(Acos, acos, -1.0/sqrt(1.0-a_.value()*a_.value()))
 ADEPT_DEFINE_UNARY_FUNCTION(Atan, atan, 1.0/(1+a_.value()*a_.value()))
 ADEPT_DEFINE_UNARY_FUNCTION(Sinh, sinh, cosh(a_.value()))
 ADEPT_DEFINE_UNARY_FUNCTION(Cosh, cosh, sinh(a_.value()))
-ADEPT_DEFINE_UNARY_FUNCTION(Abs,  abs,  (a_.value()>0.0)-(a_.value()<0.0))
+// Note that we use first define the case for fabs here, because abs
+// is likely to call the integer version from the C library
+ADEPT_DEFINE_UNARY_FUNCTION(Abs,  fabs,  (a_.value()>0.0)-(a_.value()<0.0))
 ADEPT_DEFINE_UNARY_FUNCTION(Expm1,expm1, exp(a_.value()))
 ADEPT_DEFINE_UNARY_FUNCTION(Exp2, exp2,  0.6931471805599453094172321214581766*exp2(a_.value()))
 ADEPT_DEFINE_UNARY_FUNCTION(Log1p,log1p, 1.0/(1.0+a_.value()))
@@ -1472,16 +1474,17 @@ ADEPT_DEFINE_UNARY_FUNCTION(Erfc, erfc, -1.12837916709551*exp(-a_.value()*a_.val
 
 #undef ADEPT_DEFINE_UNARY_FUNCTION
 
-// Need both fabs and abs for C compatibility, so get fabs to return
-// an Abs object
+// Need both fabs and abs for C compatibility, so get abs to return an
+// Abs object (which uses fabs internally, so doesn't incorrectly call
+// the integer version)
 template <class A>
 inline
-adept::Abs<A> fabs(const adept::Expression<A>& a) {
+adept::Abs<A> abs(const adept::Expression<A>& a) {
   return adept::Abs<A>(a.cast());
 }
 
 // Need to add ceil, floor...
-// Lots more math function in math.h: erf, bessel functions etc...
+// Lots more math function in math.h: bessel functions etc...
 
 template <class A>
 inline

@@ -23,7 +23,7 @@ Hogan, R. J., 2014: Fast reverse-mode automatic differentiation using
 expression templates in C++. ACM Trans. Math. Soft., l40, 26:1-26:16.
 
 
-INSTALLING
+INSTALLING FROM AN OFFICIAL RELEASE
 
 To create the Makefiles, type
 
@@ -76,6 +76,20 @@ step if you are installing to a system directory (e.g. the default
 along with the shared version of the library.
 
 This code has been tested under Linux using the GNU C++ compiler.
+
+
+INSTALLING FROM A GITHUB SNAPSHOT
+
+In the top-level directory, type:
+
+   libtoolize
+   aclocal
+   autoheader
+   automake --add-missing
+   autoconf
+
+and then follow the instructions under "INSTALLING FROM AN OFFICIAL
+RELEASE".
 
 
 TESTING AND BENCHMARKING

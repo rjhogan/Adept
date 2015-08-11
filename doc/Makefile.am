@@ -5,3 +5,7 @@ adept_documentation.pdf:
 	pdflatex adept_documentation.tex
 	pdflatex adept_documentation.tex
 	pdflatex adept_documentation.tex
+
+documentation: adept_documentation.pdf
+
+.PHONY: documentation

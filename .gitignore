@@ -20,5 +20,4 @@ Makefile.in
 Makefile
 !test/Makefile
 !doc/Makefile
-doc/adept_documentation.pdf
 include/adept_source.h

@@ -122,6 +122,8 @@ simulate_radiances(int n, // Size of temperature array
     s.independent(&t[0], n);
     s.dependent(r, 2);
     
+    std::cout << s;
+
     // Compute Jacobian matrix
     std::vector<double> jacobian((n+1)*2);
     s.jacobian(&jacobian[0]);

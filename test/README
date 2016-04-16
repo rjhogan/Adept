@@ -178,3 +178,20 @@ linking to an external Adept library (via -ladept) is required. This
 capability makes it easier to distribute a package that can be used on
 the widest range of operating systems, particularly those like
 Microsoft Windows that cannot natively run the configure shell script.
+
+
+
+TEST 9: USING NESTED STACKS
+
+Executable: test_stack_nesting
+
+Source files: test_stack_nesting.cpp
+
+Demonstrates: use of nested stacks to accellerate Jacobian
+calculations in some situations.
+
+This test case illustrates how Jacobian calculations can be
+accelerated in certain situations when they are composed of "modules"
+that each involve a few numbers being calculated from many. In this
+situation we may avoid redundant computations by calculating a local
+Jacobian for each module and adding it to the stack.

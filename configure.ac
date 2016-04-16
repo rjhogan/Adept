@@ -10,10 +10,12 @@ AC_CONFIG_SRCDIR([adept/adept.cpp])
 AC_CONFIG_HEADERS([config.h])
 
 AM_INIT_AUTOMAKE([-Wall -Wno-error])
+AC_CONFIG_MACRO_DIR([m4])
 
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_MAKE_SET
+m4_ifdef([AM_PROG_AR],[AM_PROG_AR])
 AC_PROG_LIBTOOL
 
 # Checks for libraries.
@@ -54,7 +56,7 @@ AC_TYPE_SIZE_T
 # Checks for library functions.
 AC_CHECK_FUNCS([gettimeofday pow sqrt])
 
-AC_CONFIG_FILES([Makefile makefile_include adept/Makefile include/Makefile benchmark/Makefile])
+AC_CONFIG_FILES([Makefile makefile_include adept/Makefile include/Makefile benchmark/Makefile doc/Makefile])
 
 AC_MSG_NOTICE([********************* Summary **************************************])
 AC_MSG_NOTICE([Compiling with: $CXX $CPPFLAGS $CXXFLAGS $OPENMP_CXXFLAGS])

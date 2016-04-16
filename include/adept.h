@@ -34,7 +34,8 @@
    SECTION 7: Definition of Expression types
    SECTION 8: Definition of Traits
    SECTION 9: Definition of aReal
-   SECTION 10: Helper functions
+   SECTION 10: Definition of a Stack member functions dependent on aReal
+   SECTION 11: Helper functions
 */
 
 // ---------------------------------------------------------------------
@@ -349,6 +350,9 @@ namespace adept {
   // SECTION 6: Definition of Stack class
   // ---------------------------------------------------------------------
 
+  // Forward declaration so that Stack knows about aReal objects
+  class aReal;
+
   // Class containing derivative information of an algorithm, from which
   // the Jacobian matrix can be constructed, as well as tangent-linear
   // and adjoint operations being carried out for suitable input
@@ -606,6 +610,13 @@ namespace adept {
     Offset n_independent() { return independent_offset_.size(); }
     Offset n_dependent() { return dependent_offset_.size(); }
 
+    // Get the full list, occasionally useful for passing to a nested
+    // adept stack
+    const std::vector<Offset>& independents() const
+    { return independent_offset_; }
+    const std::vector<Offset>& dependents() const
+    { return dependent_offset_; }
+
     // Compute the Jacobian matrix; note that jacobian_out must be
     // allocated to be of size m*n, where m is the number of dependent
     // variables and n is the number of independents. The independents
@@ -646,30 +657,24 @@ namespace adept {
     // active variables are independent (x) and which are dependent
     // (y). First, the following two functions declare an individual
     // active variable and an array of active variables to be
-    // independent. Note that we use templates here because aReal has
-    // not been defined.
-    template <class A>
-    void independent(const A& x) {
-      independent_offset_.push_back(x.gradient_offset());
-    }
-    template <class A>
-    void independent(const A* x, Offset n) {
-      for (Offset i = 0; i < n; i++) {
-	independent_offset_.push_back(x[i].gradient_offset());
-      }
-    }
+    // independent. Due to the definition on aReal, the definitions
+    // are near the end of the file after aReal has been defined.
+    void independent(const aReal& x);
+    void independent(const aReal* x, Offset n);
 
-    // Likewise, delcare the dependent variables
-    template <class A>
-    void dependent(const A& x) {
-      dependent_offset_.push_back(x.gradient_offset());
-    }
-    template <class A>
-    void dependent(const A* x, Offset n) {
-      for (Offset i = 0; i < n; i++) {
-	dependent_offset_.push_back(x[i].gradient_offset());
-      }
-    }
+    // If you use a std::vector to hold your aReal objects, you can
+    // add a block of them to the existing list
+    void independent(const std::vector<aReal>& x);
+
+    // If you use nested stacks then it may be useful to pass lists of
+    // independent variables around
+    void independent(const std::vector<Offset>& x);
+
+    // Likewise, declare the dependent variables
+    void dependent(const aReal& x);
+    void dependent(const aReal* x, Offset n);
+    void dependent(const std::vector<aReal>& x);
+    void dependent(const std::vector<Offset>& x);
 
     // Print various bits of information about the Stack to the
     // specified stream (or standard output if not specified). The
@@ -876,7 +881,7 @@ namespace adept {
       }
     }
 
-private:
+protected:
     // This function is called by the constructor to initialize
     // memory, which can be grown subsequently
     void initialize(Offset n);
@@ -909,7 +914,7 @@ private:
     void jacobian_forward_openmp(Real* jacobian_out);
     void jacobian_reverse_openmp(Real* jacobian_out);
 
-  private:
+  protected:
     // --- DATA SECTION ---
 
 #ifdef ADEPT_STACK_STORAGE_STL
@@ -968,8 +973,6 @@ private:
   // expression return?
   //#define ADEPT_VALUE_RETURN_TYPE const Real&
 #define ADEPT_VALUE_RETURN_TYPE Real
-
-  class aReal;
 
   // The Expression type from which all other types of expression
   // derive. Each member function simply calls the specialized version
@@ -2114,7 +2117,7 @@ namespace adept {
       return gradient;
     }
     
-  private:
+  protected:
     // --- DATA SECTION ---
     Real val_;                     // The numerical value
     Offset gradient_offset_;       // Index to where the corresponding
@@ -2125,7 +2128,53 @@ namespace adept {
 #undef ADEPT_VALUE_RETURN_TYPE
 
   // ---------------------------------------------------------------------
-  // SECTION 10: Helper functions
+  // SECTION 10: Definitions of Stack member functions that require a
+  // definition of aReal - see their declarations for an explanation
+  // ---------------------------------------------------------------------
+  inline void Stack::independent(const aReal& x) {
+    independent_offset_.push_back(x.gradient_offset());
+  }
+
+  inline void Stack::independent(const aReal* x, Offset n)  {
+    for (Offset i = 0; i < n; ++i) {
+      independent_offset_.push_back(x[i].gradient_offset());
+    }
+  }
+
+  inline void Stack::independent(const std::vector<aReal>& x) {
+    for (Offset i = 0; i < x.size(); ++i) {
+      independent_offset_.push_back(x[i].gradient_offset());
+    }
+  }
+
+  inline void Stack::independent(const std::vector<Offset>& x) {
+    independent_offset_.insert(independent_offset_.end(),
+			       x.begin(), x.end());
+  }
+
+  inline void Stack::dependent(const aReal& x) {
+    dependent_offset_.push_back(x.gradient_offset());
+  }
+
+  inline void Stack::dependent(const aReal* x, Offset n)  {
+    for (Offset i = 0; i < n; ++i) {
+      dependent_offset_.push_back(x[i].gradient_offset());
+    }
+  }
+
+  inline void Stack::dependent(const std::vector<aReal>& x) {
+    for (Offset i = 0; i < x.size(); ++i) {
+      dependent_offset_.push_back(x[i].gradient_offset());
+    }
+  }
+
+  inline void Stack::dependent(const std::vector<Offset>& x) {
+    dependent_offset_.insert(independent_offset_.end(),
+			       x.begin(), x.end());
+  }
+
+  // ---------------------------------------------------------------------
+  // SECTION 11: Helper functions
   // ---------------------------------------------------------------------
 
   // When we need source files that will be compiled twice, both

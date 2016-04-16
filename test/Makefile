@@ -19,7 +19,7 @@ ADEPT_FLAGS = -DADEPT_RECORDING_PAUSABLE
 OBJECTS = algorithm.o algorithm_noad.o test_checkpoint.o \
 	test_adept.o test_adept_with_and_without_ad.o \
 	test_radiances.o simulate_radiances.o test_thread_safe.o \
-	test_no_lib.o test_misc.o
+	test_no_lib.o test_misc.o test_stack_nesting.o
 GSL_OBJECTS = test_gsl_interface.o state.o rosenbrock_banana_function.o
 
 GSL_LIBS = -lgsl -lgslcblas
@@ -40,7 +40,7 @@ MYLIBS = -ladept $(LIBS)
 
 PROGRAMS = test_adept test_adept_with_and_without_ad test_radiances \
 	test_gsl_interface test_misc test_checkpoint test_thread_safe \
-	test_no_lib
+	test_no_lib test_stack_nesting
 
 all:
 	@echo "********************************************************"
@@ -87,6 +87,10 @@ test_thread_safe: test_thread_safe.o $(LIBADEPT)
 # Test program 8 (note that it is not linked against the Adept library
 test_no_lib: test_no_lib.o algorithm.o
 	$(CXXLINK) test_no_lib.o algorithm.o
+
+# Test program 9
+test_stack_nesting: test_stack_nesting.o
+	$(CXXLINK) test_stack_nesting.o $(MYLIBS)
 
 # The no-automatic-differentiation version of the algorithm: uses the
 # -DADEPT_NO_AUTOMATIC_DIFFERENTIATION to produce a version of the

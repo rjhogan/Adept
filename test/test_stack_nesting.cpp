@@ -4,6 +4,8 @@
 
   Author: Robin Hogan <r.j.hogan@reading.ac.uk>
 
+  Thanks to Julian Kaupe for suggesting this pattern
+
   Copying and distribution of this file, with or without modification,
   are permitted in any medium without royalty provided the copyright
   notice and this notice are preserved.  This file is offered as-is,

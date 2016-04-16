@@ -336,6 +336,9 @@ programs in the \code{test} directory:
 \item\code{test\_no\_lib}: demonstrates the use of the
   \code{adept\_source.h} header file that means there is no need to
   link to the \Adept\ library in order to create an executable.
+\item\code{test\_stack\_nesting}: demonstrates that Jacobian
+  calculations of certain types of algorithm can be accelerated with
+  nested stacks.
 \end{itemize}
 In the \code{benchmark} directory it compiles
 \code{autodiff\_benchmark} for comparing the speed of the
@@ -1966,8 +1969,8 @@ double dB_dA = cos(A)/A - sin(A) / (A*A);
   \Adept\ means that it does not work optimally (if it works at all)
   with matrix libraries that use expression templates. However, I am
   working on a combined library that would combine array functionality
-  with automatic differentiation, which will hopefully be released as
-  version 2.0 of \Adept.
+  with automatic differentiation, which is available as version 2.0 of
+  \Adept.
 \item[Do you have plans to enable \Adept\ to produce Hessian
   matrices?]  Not in the near future; adding array functionality is a
   higher priority at the moment.  However, if your objective function
@@ -2009,7 +2012,30 @@ J(\x) \myspace =\myspace \left[\y(\x)-\y^o\right]^\mathrm{T}{\bf
   term in (\ref{eq:objective}), so it is easy to work out what the
   Hessian would look like if only a subset of the terms in
   (\ref{eq:objective}) were present.
-
+\item[Why doesn't the ternary operator work?] Some compilers will fail
+  to compile the following function:
+\begin{lstlisting}
+adept::adouble piecewise(adept::adouble x) {
+  return x < 1.0 ? x*x : 2.0*x-1.0;
+}
+\end{lstlisting}%
+The reason is that these compilers require that the two possible
+outcomes of the ternary operator have the same type, but due to the
+use of expression templates, the types of these mathematical
+expressions are actually different.  The ternary operator cannot be
+overloaded to allow such arguments. The solution is to explicitly
+convert the outcomes to \code{adouble}:
+\begin{lstlisting}
+adept::adouble piecewise(adept::adouble x) {
+  return x < 1.0 ? adept::adouble(x*x) : adept::adouble(2.0*x-1.0);
+}
+\end{lstlisting}
+\item[Why is my executable so huge?]  Probably you are including
+  debugging symbols by compiling with the \code{-g} option. Expression
+  templates need long strings to describe them, so this extra content
+  can increase the size of object files and executables by a factor of
+  ten.  This does not slow down execution, but for production code you
+  may wish to compile without debugging symbols.
 \end{description}
 
 \section{License for \Adept\ software}

@@ -1,15 +1,23 @@
 /* test_stack_nesting - Acceleration of certain types of algorithm with nesting
 
-  Copyright (C) 2016 European Centre for Medium Range Weather Forecasting
+  Copyright (C) 2016 European Centre for Medium Range Weather Forecasts
 
   Author: Robin Hogan <r.j.hogan@reading.ac.uk>
-
-  Thanks to Julian Kaupe for suggesting this pattern
 
   Copying and distribution of this file, with or without modification,
   are permitted in any medium without royalty provided the copyright
   notice and this notice are preserved.  This file is offered as-is,
   without any warranty.
+
+  This test case illustrates how Jacobian calculations can be
+  accelerated in certain situations when they are composed of
+  "modules" that each involve a few numbers being calculated from
+  many. In this situation we may avoid redundant computations by using
+  a nested stack to calculate a local Jacobian for each module, and
+  then adding it to the main stack.
+
+  Thanks to Julian Kaupe for suggesting this pattern.
+
 */
 
 #include <iostream>

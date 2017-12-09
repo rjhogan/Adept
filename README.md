@@ -15,7 +15,7 @@ then consider using [Adept 2.0](https://github.com/rjhogan/Adept-2).
 For further information see:
 * The [Adept web site](http://www.met.reading.ac.uk/clouds/adept/)
 * A detailed [User Guide](http://www.met.reading.ac.uk/clouds/adept/adept_documentation_1.1.pdf)
-* [A paper published in ACM TOMS](http://www.met.reading.ac.uk/clouds/publications/adept.pdf) describing how it works.
+* [A paper published in ACM TOMS](http://www.met.reading.ac.uk/~swrhgnrj/publications/adept.pdf) describing how it works.
 
 To build Adept from a GitHub snapshot, do the following:
 

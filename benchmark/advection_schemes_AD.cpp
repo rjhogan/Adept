@@ -106,17 +106,25 @@ void toon_AD(int nt, double c, const double q_init[NX], double q_out[NX],
     }
     q -= NX;
     for (int i = 0; i < NX-1; i++) {
-      double factor = exp(c*log(q[i]/q[i+1]));
-      double one_over_q_i = 1.0/q[i];
-      double one_over_q_i_plus_one = 1.0/q[i+1];
-      double one_over_denominator = 1.0/(one_over_q_i+one_over_q_i_plus_one);
-      q_AD[i] += one_over_denominator*one_over_q_i
-	* (c*factor - (factor-1.0)*one_over_denominator*one_over_q_i)
-	* flux_AD[i];
-      q_AD[i+1] += one_over_denominator*one_over_q_i_plus_one
-	* (- c*factor + (factor-1.0)*one_over_denominator*one_over_q_i_plus_one)
-	* flux_AD[i];
-      flux_AD[i] = 0.0;
+      // Need to check if the difference between adjacent points is
+      // not too small or we end up with close to division by zero.
+      if (fabs(q[i]-q[i+1]) > q[i]*1.0e-6) {
+	double factor = exp(c*log(q[i]/q[i+1]));
+	double one_over_q_i = 1.0/q[i];
+	double one_over_q_i_plus_one = 1.0/q[i+1];
+	double one_over_denominator = 1.0/(one_over_q_i_plus_one-one_over_q_i);
+	q_AD[i] += one_over_denominator*one_over_q_i
+	  * (c*factor - (factor-1.0)*one_over_denominator*one_over_q_i)
+	  * flux_AD[i];
+	q_AD[i+1] += one_over_denominator*one_over_q_i_plus_one
+	  * (- c*factor + (factor-1.0)*one_over_denominator*one_over_q_i_plus_one)
+	  * flux_AD[i];
+	flux_AD[i] = 0.0;
+      }
+      else {
+	q_AD[i] += c*flux_AD[i];
+	flux_AD[i] = 0.0;
+      }
     }
   }
   for (int i = 0; i < NX; i++) {

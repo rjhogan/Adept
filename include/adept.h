@@ -164,6 +164,16 @@
 // then you can make an empty declaration here.
 //#define ADEPT_THREAD_LOCAL thread_local
 
+// macro ADEPT_COPY_CONSTRUCTOR_ONLY_ON_RETURN_FROM_FUNCTION 
+// is considered dangerous, instead it is preferred to use C++11 rvalue references 
+// to implement "move semantics": the gradient offset can be 
+// "stolen from" an rvalue aReal
+// this is beneficial if:
+// - many temporary aReal objects are created (e.g. returned from a function)
+// - or if a move-enabled container of aReal objects needs to move its contents 
+//   (e.g. reallocation happens while growing a std::vector<aReal>) 
+#define ADEPT_USE_RVALUE_REFS 1
+
 // User files can be compiled with ADEPT_NO_AUTOMATIC_DIFFERENTIATION,
 // which makes the aReal type behave as a double.  The following
 // #ifndef wraps almost all of this header file.
@@ -188,6 +198,10 @@
 #include <valarray>
 #endif
 
+#ifdef ADEPT_USE_RVALUE_REFS
+#include <cassert>
+#include <limits>
+#endif
 
 // ---------------------------------------------------------------------
 // SECTION 4: Miscellaneous
@@ -1844,6 +1858,16 @@ namespace adept {
     aReal(const aReal& rhs)
       : val_(rhs.value()), gradient_offset_(rhs.gradient_offset()) { }
 #endif
+
+#ifdef ADEPT_USE_RVALUE_REFS
+    // constructor from an rvalue: the gradient_offset_ can be "stolen" from the rhs
+    aReal(aReal&& rhs) 
+      : val_(rhs.value()), gradient_offset_(rhs.gradient_offset_)
+    {
+      assert(rhs.gradient_offset_ != uninitializedOffset);
+      rhs.gradient_offset_ = uninitializedOffset;
+    }
+#endif
     
     // Construction with an expression
     template<class R>
@@ -1878,7 +1902,15 @@ namespace adept {
       if (ADEPT_ACTIVE_STACK->is_recording()) {
 #endif
 
-	ADEPT_ACTIVE_STACK->unregister_gradient(gradient_offset_);
+#ifdef ADEPT_USE_RVALUE_REFS
+    if (gradient_offset_ != uninitializedOffset) {
+#endif
+
+       ADEPT_ACTIVE_STACK->unregister_gradient(gradient_offset_);
+
+#ifdef ADEPT_USE_RVALUE_REFS
+  }
+#endif
 
 #ifdef ADEPT_RECORDING_PAUSABLE
       }
@@ -1906,6 +1938,17 @@ namespace adept {
 #endif
       return *this;
     }
+
+#ifdef ADEPT_USE_RVALUE_REFS
+    // assignment from an rvalue: the gradient_offset_ can be "stolen" from the rhs
+    aReal& operator=(aReal&& rhs) {
+        this->val_ = rhs.value();
+        this->gradient_offset_ = rhs.gradient_offset_;
+        assert(rhs.gradient_offset_ != uninitializedOffset);
+        rhs.gradient_offset_ = uninitializedOffset;
+        return *this;
+    }
+#endif
     
     // Assignment operator with an inactive variable on the rhs
     aReal& operator=(const Real& rhs) {
@@ -2123,6 +2166,13 @@ namespace adept {
     Offset gradient_offset_;       // Index to where the corresponding
 				   // gradient will be held during the
 				   // adjoint calculation
+
+#ifdef ADEPT_USE_RVALUE_REFS
+    // use the highest possible value to represent an uninitialized offset
+    // assert we'll never reach that offset value
+	// NOTE: std::numeric_limits<Offset>::max() is not constexpr in Windows yet :(
+    static const Offset uninitializedOffset = UINT_MAX;
+#endif
   }; // End of definition of aReal
 
 #undef ADEPT_VALUE_RETURN_TYPE

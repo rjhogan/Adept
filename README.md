@@ -8,7 +8,7 @@ matrices significantly faster than the leading current tools that use
 the same approach of operator overloading, and often not much slower
 than hand-written adjoint code.
 
-Note that this is not the latest version of Adept: if you want a
+Note that this is not the latest version of Adept: If you want a
 library that combines array features with automatic differentiation
 then consider using [Adept 2.0](https://github.com/rjhogan/Adept-2).
 
